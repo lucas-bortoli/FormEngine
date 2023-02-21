@@ -1,0 +1,41 @@
+.field input {
+  display: none;
+}
+
+.list {
+  margin-top: 0.67em;
+}
+
+.list:empty {
+  display: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  user-select: none;
+  font-size: 0.8em;
+  background-color: #fff;
+  transition: filter linear 100ms;
+  border-bottom: 1px solid #fff;
+}
+
+.item:hover {
+  filter: brightness(0.925);
+}
+
+.fileName {
+  flex-grow: 1;
+}
+
+.fileSize {
+  color: #888;
+  padding: 0 1em;
+}
+
+.removeItem {
+  color: #fff;
+  text-decoration: none;
+  background-color: rgb(216, 59, 59);
+  padding: 0 1em;
+}

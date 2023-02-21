@@ -1,0 +1,67 @@
+.form {
+}
+
+.field {
+  background-color: white;
+  padding: 1em;
+  border-radius: 0.5em;
+  margin-bottom: 1em;
+  box-sizing: content-box;
+  /*border-left: 4px solid transparent;*/
+}
+
+.field.invalid {
+  border-bottom: 4px solid rgb(255, 200, 200);
+}
+
+.fieldRequired {
+  /* estilos para um campo exigido */
+}
+
+.field > * {
+  margin-top: 0;
+}
+
+.field > *:last-child {
+  margin-bottom: 0;
+}
+
+.title {
+  font-weight: normal;
+  font-size: 0.8em;
+  margin-top: 0;
+}
+
+.description {
+  margin-top: 0;
+}
+
+.field :is(ol, ul) {
+  list-style: none;
+  padding: 0;
+}
+
+.field li {
+  display: flex;
+  align-items: center;
+}
+
+.field li :is(input[type="checkbox"], input[type="radio"]) {
+  margin: 0;
+  margin-right: 0.75em;
+  cursor: pointer;
+}
+
+.field :is(input[type="text"], select) {
+  width: 100%;
+}
+
+.field input[type="file"] {
+  display: none;
+}
+
+.field textarea {
+  width: 100%;
+  min-height: 5lh;
+  resize: none;
+}
