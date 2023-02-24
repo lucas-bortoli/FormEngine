@@ -7,40 +7,40 @@ interface Properties {
   fieldId: string;
 }
 
-export const ComboboxField = (
-  properties: Schemas.ComboboxField & Properties
-) => {
-  const [selected, setSelected] = useState<string>(
-    Object.keys(properties.items)[0] ?? ""
-  );
+export const ComboboxField = (properties: Schemas.ComboboxField & Properties) => {
+  const [selected, setSelected] = useState<string>("");
   const ctx = useContext(formContext);
 
-  const validate = (): boolean => {
+  const validate = (): string | undefined => {
     if (properties.required) {
-      return Object.keys(properties.items).includes(selected);
+      if (!properties.items[selected]) {
+        return "É preciso selecionar um item neste campo.";
+      }
     }
 
-    return false;
+    // ok
   };
 
   useEffect(() => {
-    const results: Results.Field = {
+    const results: Results.WithValidation<Results.Field> = {
       type: "combobox",
-      hasValidationError: !validate(),
+      validationError: validate(),
       selectedItem: selected,
     };
 
     ctx?.setFieldValue<Results.ComboboxField>(properties.fieldId, results);
+    ctx?.provideTags(properties.fieldId, properties.items[selected]?.providesTags ?? []);
   }, [selected]);
 
   return (
-    <BaseField
-      {...properties}
-      isValid={validate()}
-    >
+    <BaseField {...properties} isValid={typeof validate() === "undefined"}>
       <select
         onChange={(ev) => setSelected((ev.target as HTMLSelectElement).value)}
+        defaultChecked={true}
       >
+        <option value="" disabled selected>
+          Selecione uma opção...
+        </option>
         {Object.keys(properties.items).map((optionId) => {
           const item = properties.items[optionId];
 

@@ -15,38 +15,34 @@ export const FileField = (properties: Schemas.FileField & Properties) => {
   const [fileHandles, setFileHandles] = useState<File[]>([]);
   const ctx = useContext(formContext);
 
-  const validate = (): boolean => {
+  const validate = (): string | undefined => {
     const minimumFiles = properties.minimumFiles ?? 1;
     const maximumFiles = properties.maximumFiles ?? Infinity;
     const maximumTotalSize = properties.maximumFileSize ?? 5242880; // 5 mb
 
     if (properties.required) {
       // Se excede a quantidade de arquivos...
-      if (
-        fileHandles.length < minimumFiles ||
-        fileHandles.length > maximumFiles
-      ) {
-        return false;
+      if (fileHandles.length < minimumFiles) {
+        return "Há arquivos em falta neste campo.";
+      }
+
+      if (fileHandles.length > maximumFiles) {
+        return "Há arquivos demais neste campo.";
       }
 
       // Se o total de bytes excede o máximo...
-      if (
-        fileHandles.map((f) => f.size).reduce((a, b) => a + b, 0) >
-        maximumTotalSize
-      ) {
-        return false;
+      if (fileHandles.map((f) => f.size).reduce((a, b) => a + b, 0) > maximumTotalSize) {
+        return "O tamanho total excede o máximo.";
       }
-
-      return true;
     }
 
-    return false;
+    // ok
   };
 
   useEffect(() => {
-    const results: Results.Field = {
+    const results: Results.WithValidation<Results.Field> = {
       type: "fileupload",
-      hasValidationError: !validate(),
+      validationError: validate(),
       files: fileHandles.map((handle) => ({
         name: handle.name,
         size: handle.size,
@@ -74,14 +70,8 @@ export const FileField = (properties: Schemas.FileField & Properties) => {
   };
 
   return (
-    <BaseField
-      {...properties}
-      className={styles.field}
-      isValid={validate()}
-    >
-      <button onClick={() => inputRef.current?.click()}>
-        Adicionar arquivos...
-      </button>
+    <BaseField {...properties} className={styles.field} isValid={typeof validate() === "undefined"}>
+      <button onClick={() => inputRef.current?.click()}>Adicionar arquivos...</button>
       <input
         type="file"
         ref={inputRef}

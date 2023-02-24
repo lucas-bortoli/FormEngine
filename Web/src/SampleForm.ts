@@ -3,14 +3,22 @@ import { Schemas } from "./FormDefinitions";
 const form: Schemas.Form = {
   title: "Formulário de impressão 3D",
   description: "Esse formulário busca padronizar os pedidos de impressão 3D.",
+  action: "/post/3d",
   fields: {
     nome: {
       type: "textfield",
       title: "Requisitante",
       description: "O nome de quem está pedindo a impressão da peça.",
       placeholderText: "Seu nome",
-      required: true,
       maximumLength: 32,
+    },
+    opcaoFormulario: {
+      type: "combobox",
+      title: "Selecione um caminho",
+      items: {
+        caminho1: { label: "Caminho 1", providesTags: ["caminho1"] },
+        caminho2: { label: "Caminho 2", providesTags: ["caminho2"] },
+      },
     },
     arquivos: {
       type: "fileupload",
@@ -42,10 +50,9 @@ const form: Schemas.Form = {
         lucas: { label: "Lucas" },
       },
     },
-    ok: {
+    prioridade: {
       type: "radiobutton",
       title: "Qual a prioridade da impressão?",
-      required: false,
       items: {
         1: { label: "mínima" },
         2: { label: "normal" },

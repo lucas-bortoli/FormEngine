@@ -11,21 +11,29 @@ export const TextField = (properties: Schemas.TextField & Properties) => {
   const [value, setValue] = useState("");
   const ctx = useContext(formContext);
 
-  const validate = (): boolean => {
+  const validate = (): string | undefined => {
     const minLength = properties.minimumLength ?? 1;
     const maxLength = properties.maximumLength ?? value.length;
 
-    if (value.length >= minLength && value.length <= maxLength) {
-      return true;
+    if (value.length === 0) {
+      return "É preciso preencher este campo.";
     }
 
-    return false;
+    if (value.length < minLength) {
+      return "O valor dado é muito curto.";
+    }
+
+    if (value.length > maxLength) {
+      return "O valor dado é muito longo.";
+    }
+
+    // ok
   };
 
   useEffect(() => {
-    const result: Results.Field = {
+    const result: Results.WithValidation<Results.Field> = {
       type: "textfield",
-      hasValidationError: !validate(),
+      validationError: validate(),
       value: value,
     };
 
@@ -35,10 +43,7 @@ export const TextField = (properties: Schemas.TextField & Properties) => {
   const Text = properties.multiline ? "textarea" : "input";
 
   return (
-    <BaseField
-      {...properties}
-      isValid={validate()}
-    >
+    <BaseField {...properties} isValid={typeof validate() === "undefined"}>
       <Text
         type="text"
         placeholder={properties.placeholderText}

@@ -4,6 +4,7 @@ import { Schemas } from "../FormDefinitions";
 import formStyles from "../form.module.css";
 
 interface Properties {
+  fieldId: string;
   children: ComponentChildren;
   className?: string;
   isValid?: boolean;
@@ -20,6 +21,7 @@ export const BaseField = (properties: Schemas.BaseField & Properties) => {
         properties.className,
         isValid ? "valid" : formStyles.invalid,
       ].join(" ")}
+      id={`field-${properties.fieldId}`}
     >
       {properties.title && (
         <h1 className={formStyles.title}>
@@ -27,9 +29,7 @@ export const BaseField = (properties: Schemas.BaseField & Properties) => {
           {properties.title}
         </h1>
       )}
-      {properties.description && (
-        <p className={formStyles.description}>{properties.description}</p>
-      )}
+      {properties.description && <p className={formStyles.description}>{properties.description}</p>}
       {properties.children}
     </section>
   );

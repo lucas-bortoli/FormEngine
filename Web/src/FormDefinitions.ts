@@ -7,7 +7,7 @@ export namespace Schemas {
     /**
      * Indica as tags exigidos para a exibição deste campo.
      */
-    requireTags?: string[];
+    requiredTags?: string[];
   }
 
   export interface TextField extends BaseField {
@@ -113,12 +113,7 @@ export namespace Schemas {
     allowedExtensions?: string[];
   }
 
-  export type Field =
-    | TextField
-    | CheckboxField
-    | RadioField
-    | ComboboxField
-    | FileField;
+  export type Field = TextField | CheckboxField | RadioField | ComboboxField | FileField;
 
   export interface Form {
     /**
@@ -135,15 +130,18 @@ export namespace Schemas {
      * Os campos do formulário.
      */
     fields: { [id: string]: Field };
+
+    /**
+     * URL onde o formulário deve enviar os dados.
+     * A requisição é feita em HTTP Post, com `Content-Type: application/json`.
+     * O resultado do formulário é enviado em JSON no corpo da requisição.
+     */
+    action: string;
   }
 }
 
 export namespace Results {
-  interface BaseField {
-    hasValidationError: boolean;
-  }
-
-  export interface TextField extends BaseField {
+  export interface TextField {
     type: Schemas.TextField["type"];
     value: string;
   }
@@ -151,7 +149,7 @@ export namespace Results {
   /**
    * Um campo de checkboxes. Os checkboxes são dispostos em uma lista vertical.
    */
-  export interface CheckboxField extends BaseField {
+  export interface CheckboxField {
     type: Schemas.CheckboxField["type"];
 
     /**
@@ -163,7 +161,7 @@ export namespace Results {
   /**
    * Um campo de radio buttons. Os itens são dispostos em uma lista vertical.
    */
-  export interface RadioField extends BaseField {
+  export interface RadioField {
     type: Schemas.RadioField["type"];
 
     /**
@@ -175,7 +173,7 @@ export namespace Results {
   /**
    * Um campo de combobox. Os itens são dispostos em um dropdown.
    */
-  export interface ComboboxField extends BaseField {
+  export interface ComboboxField {
     type: Schemas.ComboboxField["type"];
 
     /**
@@ -184,7 +182,7 @@ export namespace Results {
     selectedItem: string;
   }
 
-  export interface FileField extends BaseField {
+  export interface FileField {
     type: Schemas.FileField["type"];
 
     files: {
@@ -193,12 +191,14 @@ export namespace Results {
     }[];
   }
 
-  export type Field =
-    | TextField
-    | CheckboxField
-    | RadioField
-    | ComboboxField
-    | FileField;
+  export type Field = TextField | CheckboxField | RadioField | ComboboxField | FileField;
+  export type SetOf<T extends Field> = { [fieldId: string]: T };
+  export type WithValidation<T> = T & {
+    /**
+     * Se há um erro de validação, ele estará aqui
+     */
+    validationError?: string;
+  };
 
   export interface Form {
     /**

@@ -7,39 +7,48 @@ interface Properties {
   fieldId: string;
 }
 
-export const CheckboxField = (
-  properties: Schemas.CheckboxField & Properties
-) => {
+export const CheckboxField = (properties: Schemas.CheckboxField & Properties) => {
   const [checkedInputs, setCheckedInputs] = useState<{
     [key: string]: boolean;
   }>({});
   const ctx = useContext(formContext);
 
-  const validate = (): boolean => {
+  const getSelectedItems = () =>
+    Object.keys(checkedInputs).filter((boxId) => !!checkedInputs[boxId]);
+
+  const validate = (): string | undefined => {
     if (properties.required) {
-      return Object.values(checkedInputs).filter((e) => e === true).length > 0;
+      if (getSelectedItems().length < 1) {
+        return "É preciso selecionar uma caixa neste campo.";
+      }
     }
 
-    return false;
+    // ok
   };
 
   useEffect(() => {
-    const results: Results.Field = {
+    const checkedIds = getSelectedItems();
+
+    const results: Results.WithValidation<Results.Field> = {
       type: "checkbox",
-      hasValidationError: !validate(),
-      checkedItems: Object.keys(checkedInputs).filter(
-        (boxId) => !!checkedInputs[boxId]
-      ),
+      validationError: validate(),
+      checkedItems: checkedIds,
     };
 
+    const tags: string[] = [];
+
+    for (const id of checkedIds) {
+      for (const tag of properties.items[id]?.providesTags ?? []) {
+        tags.push(tag);
+      }
+    }
+
     ctx?.setFieldValue<Results.CheckboxField>(properties.fieldId, results);
+    ctx?.provideTags(properties.fieldId, tags);
   }, [checkedInputs]);
 
   return (
-    <BaseField
-      {...properties}
-      isValid={validate()}
-    >
+    <BaseField {...properties} isValid={typeof validate() === "undefined"}>
       <ul>
         {Object.keys(properties.items).map((boxId) => {
           const box = properties.items[boxId];

@@ -12,29 +12,29 @@ export const RadioField = (properties: Schemas.RadioField & Properties) => {
   const [selected, setSelected] = useState<string>("");
   const ctx = useContext(formContext);
 
-  const validate = (): boolean => {
+  const validate = (): string | undefined => {
     if (properties.required) {
-      return Object.keys(properties.items).includes(selected);
+      if (!Object.keys(properties.items).includes(selected)) {
+        return "É preciso selecionar um item neste campo.";
+      }
     }
 
-    return true;
+    // ok
   };
 
   useEffect(() => {
-    const result: Results.Field = {
+    const result: Results.WithValidation<Results.Field> = {
       type: "radiobutton",
-      hasValidationError: !validate(),
+      validationError: validate(),
       selectedItem: selected,
     };
 
     ctx?.setFieldValue<Results.RadioField>(properties.fieldId, result);
+    ctx?.provideTags(properties.fieldId, properties.items[selected]?.providesTags ?? []);
   }, [selected]);
 
   return (
-    <BaseField
-      {...properties}
-      isValid={validate()}
-    >
+    <BaseField {...properties} isValid={typeof validate() === "undefined"}>
       <ul>
         {Object.keys(properties.items).map((optionId) => {
           const box = properties.items[optionId];
