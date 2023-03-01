@@ -7,12 +7,12 @@
   border-radius: 0.5em;
   margin-bottom: 1em;
   box-sizing: content-box;
-  box-shadow: 0 1px 10px 0 rgb(0 0 0 / 10%), 0 2px 15px 0 rgb(0 0 0 / 5%);
+  box-shadow: 0 1px 10px 0 rgb(0 0 0 / 5%), 0 2px 15px 0 rgb(0 0 0 / 2%);
   /*border-left: 4px solid transparent;*/
 }
 
 .field.invalid {
-  box-shadow: 0 1px 10px 0 #e74d3c42;
+  box-shadow: 0 1px 10px 0 #e74d3c18;
 }
 
 .fieldRequired {

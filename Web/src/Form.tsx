@@ -9,6 +9,7 @@ import { formContext } from "./FormContext";
 import formStyles from "./form.module.css";
 
 import "@lucas-bortoli/portinoli-css";
+
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -41,13 +42,18 @@ export const Form = (properties: Properties & Schemas.Form) => {
     for (const [fieldId, result] of Object.entries(values)) {
       // Não submitamos componentes escondidos
       if (hiddenComponents.includes(fieldId)) {
-        console.log(fieldId, "escondido");
         continue;
       }
 
       // Se há um erro, não enviar
       if (typeof result.validationError === "string") {
-        let message = ([properties.fields[fieldId].title, result.validationError] as string[])
+        let title = properties.fields[fieldId].title;
+
+        if (title?.length) {
+          title += ":";
+        }
+
+        let message = ([title, result.validationError] as string[])
           .filter((s) => s.length)
           .join(" ");
 
@@ -56,7 +62,9 @@ export const Form = (properties: Properties & Schemas.Form) => {
         console.log(
           `Envio rejeitado, há um erro de validação em [${fieldId} ${properties.fields[fieldId].type}]: ${result.validationError}`
         );
+
         setScrollField(fieldId);
+
         return false;
       }
 
@@ -80,8 +88,6 @@ export const Form = (properties: Properties & Schemas.Form) => {
       setScrollField("");
     }
   }, [scrollField]);
-
-  console.log(values);
 
   return (
     <div className={formStyles.form}>
@@ -115,10 +121,6 @@ export const Form = (properties: Properties & Schemas.Form) => {
             // Se não temos essa tag, não renderizar o componente.
             if (!tags.includes(requiredTag)) {
               hiddenComponents.push(name);
-
-              /*console.log(
-                `Componente [${name} ${field.type}] não renderizado porque a tag [${requiredTag}] não existe.`
-              );*/
               return;
             }
           }

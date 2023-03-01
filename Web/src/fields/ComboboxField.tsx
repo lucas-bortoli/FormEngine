@@ -18,6 +18,14 @@ export const ComboboxField = (properties: Schemas.ComboboxField & Properties) =>
       }
     }
 
+    if (properties.validate) {
+      const customValidationResult = properties.validate(selected);
+
+      if (customValidationResult?.error) {
+        return customValidationResult.error;
+      }
+    }
+
     // ok
   };
 
