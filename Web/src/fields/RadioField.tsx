@@ -19,6 +19,14 @@ export const RadioField = (properties: Schemas.RadioField & Properties) => {
       }
     }
 
+    if (properties.validate) {
+      const customValidationResult = properties.validate(selected);
+
+      if (customValidationResult?.error) {
+        return customValidationResult.error;
+      }
+    }
+
     // ok
   };
 

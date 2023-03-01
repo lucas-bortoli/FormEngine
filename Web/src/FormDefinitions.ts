@@ -1,7 +1,22 @@
 export namespace Schemas {
+  type ValidationError = { error: string };
+  type ValidationFunction<T> = (value: T) => ValidationError | undefined;
+
   export interface BaseField {
+    /**
+     * Se "false", o campo é opcional.
+     * Todos os campos são exigidos por padrão.
+     */
     required?: boolean;
+
+    /**
+     * Título do campo.
+     */
     title?: string;
+
+    /**
+     * Descrição do campo, mostrada após o título.
+     */
     description?: string;
 
     /**
@@ -16,6 +31,7 @@ export namespace Schemas {
     placeholderText?: string;
     minimumLength?: number;
     maximumLength?: number;
+    validate?: ValidationFunction<string>;
   }
 
   /**
@@ -50,6 +66,8 @@ export namespace Schemas {
         providesTags?: string[];
       };
     };
+
+    validate?: ValidationFunction<string[]>;
   }
 
   /**
@@ -79,6 +97,8 @@ export namespace Schemas {
         providesTags?: string[];
       };
     };
+
+    validate?: ValidationFunction<string>;
   }
 
   /**
@@ -103,6 +123,8 @@ export namespace Schemas {
         providesTags?: string[];
       };
     };
+
+    validate?: ValidationFunction<string>;
   }
 
   export interface FileField extends BaseField {
@@ -111,9 +133,16 @@ export namespace Schemas {
     maximumFiles?: number;
     maximumFileSize?: number;
     allowedExtensions?: string[];
+
+    validate?: ValidationFunction<File[]>;
   }
 
-  export type Field = TextField | CheckboxField | RadioField | ComboboxField | FileField;
+  export type Field =
+    | TextField
+    | CheckboxField
+    | RadioField
+    | ComboboxField
+    | FileField;
 
   export interface Form {
     /**
@@ -129,7 +158,7 @@ export namespace Schemas {
     /**
      * Os campos do formulário.
      */
-    fields: { [id: string]: Field };
+    fields: Record<string, Field>;
 
     /**
      * URL onde o formulário deve enviar os dados.
@@ -191,7 +220,12 @@ export namespace Results {
     }[];
   }
 
-  export type Field = TextField | CheckboxField | RadioField | ComboboxField | FileField;
+  export type Field =
+    | TextField
+    | CheckboxField
+    | RadioField
+    | ComboboxField
+    | FileField;
   export type SetOf<T extends Field> = { [fieldId: string]: T };
   export type WithValidation<T> = T & {
     /**
@@ -200,10 +234,10 @@ export namespace Results {
     validationError?: string;
   };
 
-  export interface Form {
-    /**
-     * Os campos do formulário.
-     */
-    fields: { [id: string]: Field };
-  }
+  export type Result<
+    T extends Schemas.Form,
+    Keys extends keyof T["fields"] = keyof T["fields"]
+  > = {
+    [FieldId in Keys]: T["fields"][FieldId];
+  };
 }

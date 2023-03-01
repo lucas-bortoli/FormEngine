@@ -10,6 +10,9 @@ import formStyles from "./form.module.css";
 
 import "@lucas-bortoli/portinoli-css";
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 interface Properties {
   onSubmit?: (results: { [fieldId: string]: Results.Field }) => void;
 }
@@ -39,16 +42,29 @@ export const Form = (properties: Properties & Schemas.Form) => {
     for (const [fieldId, result] of Object.entries(values)) {
       // Não submitamos componentes escondidos
       if (hiddenComponents.includes(fieldId)) {
-        console.log(fieldId, "escondido");
         continue;
       }
 
       // Se há um erro, não enviar
       if (typeof result.validationError === "string") {
+        let title = properties.fields[fieldId].title;
+
+        if (title?.length) {
+          title += ":";
+        }
+
+        let message = ([title, result.validationError] as string[])
+          .filter((s) => s.length)
+          .join(" ");
+
+        toast.error(message);
+
         console.log(
           `Envio rejeitado, há um erro de validação em [${fieldId} ${properties.fields[fieldId].type}]: ${result.validationError}`
         );
+
         setScrollField(fieldId);
+
         return false;
       }
 
@@ -69,10 +85,9 @@ export const Form = (properties: Properties & Schemas.Form) => {
 
     if (field) {
       field.scrollIntoView({ behavior: "smooth" });
+      setScrollField("");
     }
   }, [scrollField]);
-
-  console.log(values);
 
   return (
     <div className={formStyles.form}>
@@ -106,10 +121,6 @@ export const Form = (properties: Properties & Schemas.Form) => {
             // Se não temos essa tag, não renderizar o componente.
             if (!tags.includes(requiredTag)) {
               hiddenComponents.push(name);
-
-              /*console.log(
-                `Componente [${name} ${field.type}] não renderizado porque a tag [${requiredTag}] não existe.`
-              );*/
               return;
             }
           }
@@ -128,6 +139,7 @@ export const Form = (properties: Properties & Schemas.Form) => {
           return <FieldObj {...field} fieldId={name} />;
         })}
       </formContext.Provider>
+      <ToastContainer />
       <button className="teal" onClick={doSubmit}>
         Enviar
       </button>

@@ -27,6 +27,14 @@ export const TextField = (properties: Schemas.TextField & Properties) => {
       return "O valor dado é muito longo.";
     }
 
+    if (properties.validate) {
+      const customValidationResult = properties.validate(value);
+
+      if (customValidationResult?.error) {
+        return customValidationResult.error;
+      }
+    }
+
     // ok
   };
 

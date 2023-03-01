@@ -23,6 +23,14 @@ export const CheckboxField = (properties: Schemas.CheckboxField & Properties) =>
       }
     }
 
+    if (properties.validate) {
+      const customValidationResult = properties.validate(getSelectedItems());
+
+      if (customValidationResult?.error) {
+        return customValidationResult.error;
+      }
+    }
+
     // ok
   };
 
