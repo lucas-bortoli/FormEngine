@@ -9,6 +9,8 @@ import { formContext } from "./FormContext";
 import formStyles from "./form.module.css";
 
 import "@lucas-bortoli/portinoli-css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Properties {
   onSubmit?: (results: { [fieldId: string]: Results.Field }) => void;
@@ -45,6 +47,12 @@ export const Form = (properties: Properties & Schemas.Form) => {
 
       // Se há um erro, não enviar
       if (typeof result.validationError === "string") {
+        let message = ([properties.fields[fieldId].title, result.validationError] as string[])
+          .filter((s) => s.length)
+          .join(" ");
+
+        toast.error(message);
+
         console.log(
           `Envio rejeitado, há um erro de validação em [${fieldId} ${properties.fields[fieldId].type}]: ${result.validationError}`
         );
@@ -69,6 +77,7 @@ export const Form = (properties: Properties & Schemas.Form) => {
 
     if (field) {
       field.scrollIntoView({ behavior: "smooth" });
+      setScrollField("");
     }
   }, [scrollField]);
 
@@ -128,6 +137,7 @@ export const Form = (properties: Properties & Schemas.Form) => {
           return <FieldObj {...field} fieldId={name} />;
         })}
       </formContext.Provider>
+      <ToastContainer />
       <button className="teal" onClick={doSubmit}>
         Enviar
       </button>
