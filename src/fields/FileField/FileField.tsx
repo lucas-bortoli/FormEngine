@@ -34,6 +34,14 @@ export const FileField = (properties: Schemas.FileField & Properties) => {
       if (fileHandles.map((f) => f.size).reduce((a, b) => a + b, 0) > maximumTotalSize) {
         return "O tamanho total excede o máximo.";
       }
+
+      if (properties.validate) {
+        const customValidationResult = properties.validate(fileHandles);
+  
+        if (customValidationResult?.error) {
+          return customValidationResult.error;
+        }
+      }
     }
 
     // ok
