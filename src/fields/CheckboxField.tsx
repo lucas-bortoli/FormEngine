@@ -7,10 +7,16 @@ interface Properties {
   fieldId: string;
 }
 
-export const CheckboxField = (properties: Schemas.CheckboxField & Properties) => {
+export const CheckboxField = (
+  properties: Schemas.CheckboxField & Properties
+) => {
+  const initialItemState = Object.entries(properties.items)
+    .map(([itemId, item]) => [itemId, item.initialState === true]);
+
   const [checkedInputs, setCheckedInputs] = useState<{
     [key: string]: boolean;
-  }>({});
+  }>(Object.fromEntries(initialItemState));
+  
   const ctx = useContext(formContext);
 
   const getSelectedItems = () =>
